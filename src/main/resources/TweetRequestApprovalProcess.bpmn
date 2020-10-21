@@ -232,6 +232,11 @@
     <bpmn:sequenceFlow id="Flow_0m0chuj" sourceRef="Gateway_0rqe009" targetRef="ManuellePrufungErforderlichGateway" />
     <bpmn:sequenceFlow id="Flow_0zq3832" sourceRef="BenutzerinformationenAuslesenTask" targetRef="AufVerboteneWorterPrufenTask" />
     <bpmn:startEvent id="TweetEingereichtStartEvent" name="Tweet eingereicht" camunda:asyncAfter="true">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="tweetContent" label="Gewünschter Tweet Text" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:outgoing>Flow_0by82jn</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:scriptTask id="AufVerboteneWorterPrufenTask" name="Auf verbotene Wörter prüfen" scriptFormat="JavaScript">
@@ -239,11 +244,29 @@
       <bpmn:outgoing>Flow_0r4gqap</bpmn:outgoing>
       <bpmn:script>tc = execution.getVariable("tweetContent"); var result = tc.toLowerCase().indexOf("gpi"); execution.setVariable("checkResult", (result !== -1 ? "rejected" : "manualCheckRequired"));</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:scriptTask id="TweetAnfragePrufenTask1" name="Tweet-Anfrage prüfen" scriptFormat="JavaScript">
+    <bpmn:userTask id="TweetAnfragePrufenTask1" name="Tweet-Anfrage prüfen" camunda:asyncAfter="true" camunda:candidateGroups="kommabt">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="tweetContent" label="Eingereichter Tweet Text" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="checkResult" label="Prüfergebnis" type="enum">
+            <camunda:value id="accepted" name="Genehmigt" />
+            <camunda:value id="revisable" name="zu überarbeiten" />
+            <camunda:value id="rejected" name="abgelehnt" />
+          </camunda:formField>
+          <camunda:formField id="checkResultComment" label="Begründung" type="string" />
+        </camunda:formData>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="checkResult">accepted</camunda:inputParameter>
+          <camunda:outputParameter name="checkResult">${checkResult}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>JaSequenceFlow</bpmn:incoming>
       <bpmn:outgoing>Flow_1codaxr</bpmn:outgoing>
-      <bpmn:script>execution.setVariable("checkResult", "accepted");</bpmn:script>
-    </bpmn:scriptTask>
+    </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1rw4mjy">
@@ -575,7 +598,7 @@
       <bpmndi:BPMNShape id="Activity_18qt5ez_di" bpmnElement="AufVerboteneWorterPrufenTask">
         <dc:Bounds x="520" y="858" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0cln9mg_di" bpmnElement="TweetAnfragePrufenTask1">
+      <bpmndi:BPMNShape id="Activity_0rtu899_di" bpmnElement="TweetAnfragePrufenTask1">
         <dc:Bounds x="823" y="1094" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_1sjyo88_di" bpmnElement="MicrosoftActiveDirectoryParticipant" isHorizontal="true">
