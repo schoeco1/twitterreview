@@ -30,3 +30,5 @@ Diese Template-Repository wird an der ZHAW im Modul Geschäftsprozessintegration
 
 ## Fortgeschrittene Nutzung (Zugriff über REST)
 Die Engine kann auch per REST API gesteuert werden. Wegen Spring Boot ist die URL für die REST API minimal anders als in der Dokumentation beschrieben. Sie ist: http://localhost:8080/engine-rest/. So gibt z.B. http://localhost:8080/engine-rest/engine den Namen der Engine (default) zurück.
+
+#1
